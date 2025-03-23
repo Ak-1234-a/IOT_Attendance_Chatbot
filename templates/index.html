@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Attendance System</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <h1>Real-Time Face Emotion Analysis</h1>
+    
+    <div class="video-container">
+        <img id="video-stream" src="{{ url_for('video_feed') }}" alt="Live Video Feed">
+    </div>
+
+    <h2>Detected Emotion: <span id="emotion-text">---</span></h2>
+
+    <!-- ✅ HR Alert Popup -->
+    <div id="hr-popup" class="popup">
+        <div class="popup-content">
+            <h2>🚨 Alert: Employee Fatigue Detected!</h2>
+            <p id="alert-message"></p>
+            <button id="close-popup">Close</button>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
