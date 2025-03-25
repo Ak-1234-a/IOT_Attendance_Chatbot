@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCE Mills Employee Leaderboard</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>TCE Mills Employee Leaderboard</h1>
+        </header>
+
+        <div class="filters">
+            <button class="filter-btn active" data-department="all">All Employees</button>
+            <button class="filter-btn" data-department="Management">Management</button>
+            <button class="filter-btn" data-department="Production">Production</button>
+            <button class="filter-btn" data-department="Quality">Quality</button>
+            <button class="filter-btn" data-department="Maintenance">Maintenance</button>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>RANK</th>
+                        <th>EMPLOYEE</th>
+                        <th>ROLE</th>
+                        <th>DEPARTMENT</th>
+                        <th>ATTENDANCE</th>
+                        <th>COINS</th>
+                    </tr>
+                </thead>
+                <tbody id="employeeTableBody">
+                    <!-- Table content will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="static/script.js"></script>
+</body>
+</html>
