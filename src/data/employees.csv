@@ -1,0 +1,11 @@
+employee_id,name,role,attendance_percentage,department
+E001,John Smith,Mill Manager,98.5,Management
+E002,Sarah Johnson,Production Supervisor,97.2,Production
+E003,Michael Brown,Quality Control Inspector,95.8,Quality
+E004,David Wilson,Mechanical Engineer,94.3,Maintenance
+E005,Emily Davis,Machine Operator,96.7,Production
+E006,James Anderson,Production Supervisor,93.5,Production
+E007,Lisa Thompson,Quality Control Inspector,97.8,Quality
+E008,Robert Taylor,Maintenance Engineer,95.2,Maintenance
+E009,Jennifer Martin,Machine Operator,92.4,Production
+E010,William Clark,Mill Manager,98.1,Management

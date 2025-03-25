@@ -1,0 +1,12 @@
+{
+  "name": "tce-mills-leaderboard",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "npx serve"
+  },
+  "devDependencies": {
+    "serve": "^14.2.1"
+  }
+}
