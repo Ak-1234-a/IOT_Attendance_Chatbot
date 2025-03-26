@@ -43,7 +43,10 @@ function renderEmployees(employees) {
                 </div>
             </td>
             <td>
-                <span class="coin-value">🪙 ${employee.Coins}</span>
+                <span class="coin-value">
+                    <img src="coin.png" alt="Coin" width="20" height="20" class="coin-icon"> 
+                    ${employee.Coins}
+                </span>
             </td>
         </tr>
     `).join('');

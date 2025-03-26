@@ -175,3 +175,17 @@ tr:last-child td {
   font-weight: 500;
   min-width: 3.5rem;
 }
+
+@keyframes rotateCoin {
+  0% {
+      transform: rotateY(0deg);
+  }
+  100% {
+      transform: rotateY(360deg);
+  }
+}
+
+.coin-icon {
+  display: inline-block;
+  animation: rotateCoin 3s infinite linear; /* 3s for one full rotation, infinite looping */
+}
