@@ -44,7 +44,7 @@ function renderEmployees(employees) {
             </td>
             <td>
                 <span class="coin-value">
-                    <img src="coin.png" alt="Coin" width="20" height="20" class="coin-icon"> 
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFTmvlFSBpO5IVkhqyj9YcbCU0U5aix1PpMQ&s" alt="Coin" width="20" height="20" class="coin-icon"> 
                     ${employee.Coins}
                 </span>
             </td>
