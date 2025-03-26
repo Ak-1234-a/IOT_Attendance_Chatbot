@@ -17,6 +17,7 @@ async function fetchEmployees(department = 'all') {
 }
 
 function renderEmployees(employees) {
+    employees.sort((a, b) => b.Attendance - a.Attendance);
     tableBody.innerHTML = employees.map((employee, index) => `
         <tr>
             <td>${index + 1}</td>
