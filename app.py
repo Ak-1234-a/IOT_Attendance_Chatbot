@@ -1,17 +1,36 @@
 from flask import Flask, render_template, jsonify
-import pandas as pd
 from flask_cors import CORS
+from pymongo import MongoClient
 
 app = Flask(__name__)
 CORS(app)
 
+# MongoDB Connection
+client = MongoClient("mongodb://localhost:27017/")
+db = client["arun"]
+collection = db["employees"]
+
+TOTAL_WORKING_DAYS = 30
+
 def load_data():
     try:
-        df = pd.read_csv('employees.csv', encoding='utf-8')
-        return df.to_dict(orient='records')
+        data = list(collection.find({}, {"_id": 0, "__v": 0}))
+        formatted_data = []
+        for emp in data:
+            present = emp.get("present_days", 0)
+            attendance_percent = (present / TOTAL_WORKING_DAYS) * 100
+            formatted_data.append({
+                "Employee": emp.get("name", "Unknown"),
+                "Role": emp.get("role", "Employee"),
+                "Department": emp.get("department", "General"),
+                "Attendance": round(attendance_percent),
+                "Coins": present * 10
+            })
+        return formatted_data
     except Exception as e:
-        print(f"Error loading CSV: {e}")
+        print(f"❌ MongoDB fetch error: {e}")
         return []
+
 
 @app.route('/')
 def home():

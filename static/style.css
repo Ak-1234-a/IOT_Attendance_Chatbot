@@ -189,3 +189,78 @@ tr:last-child td {
   display: inline-block;
   animation: rotateCoin 3s infinite linear; /* 3s for one full rotation, infinite looping */
 }
+.weekly-progress-bar {
+  width: 100%;
+  height: 6px;
+  background-color: #555;
+  margin-top: 4px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.weekly-progress-bar .progress {
+  height: 100%;
+  background-color: yellow;
+  border-radius: 4px;
+}
+/* Default badge style */
+.department-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+}
+
+/* Dynamically assigned color classes (extendable) */
+.department-0 { background-color: #6366f1; } /* Indigo */
+.department-1 { background-color: #10b981; } /* Emerald */
+.department-2 { background-color: #f59e0b; } /* Amber */
+.department-3 { background-color: #ef4444; } /* Red */
+.department-4 { background-color: #3b82f6; } /* Blue */
+.department-5 { background-color: #8b5cf6; } /* Violet */
+.department-6 { background-color: #14b8a6; } /* Teal */
+.department-7 { background-color: #f97316; } /* Orange */
+.department-8 { background-color: #22c55e; } /* Green */
+.department-9 { background-color: #e11d48; } /* Rose */
+
+/* 🌙 Dark Mode Styles */
+body.dark-mode table {
+  background-color: #2a2a2a;
+  color: #ffffff;
+}
+
+body.dark-mode table th,
+body.dark-mode table td {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+body.dark-mode .employee-name,
+body.dark-mode .department-badge,
+body.dark-mode .attendance-value,
+body.dark-mode .employee-id {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+body.dark-mode .employee-id {
+  color: #cccccc !important;
+}
+
+body.dark-mode table tr:hover {
+  background-color: #333333;
+}
+/* ✅ Fix for Title */
+body.dark-mode h1 {
+  color: #ffffff !important;
+  font-weight: 700;
+}
+
+/* ✅ Fix for Table Header Row */
+body.dark-mode table th {
+  background-color: #1e1e1e !important;
+  color: #ffffff !important;
+  font-weight: 700;
+}
