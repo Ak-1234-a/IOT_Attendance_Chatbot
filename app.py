@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, Response
 from flask_cors import CORS
 from pymongo import MongoClient
 import requests
@@ -16,7 +16,8 @@ TOTAL_WORKING_DAYS = 30
 
 # Hugging Face API Configuration
 HUGGINGFACE_API_URL = "https://api-inference.huggingface.co/models/google/flan-t5-large"
-HUGGINGFACE_API_KEY = "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"  # 🔐 Replace this with your actual API key
+HUGGINGFACE_AUDIO_API_URL = "https://api-inference.huggingface.co/models/facebook/musicgen-small"  # Audio model
+HUGGINGFACE_API_KEY = "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"  # 🔐 Replace with your key
 
 headers = {
     "Authorization": f"Bearer {HUGGINGFACE_API_KEY}",
@@ -92,6 +93,23 @@ def generate_motivation():
     except Exception as e:
         print(f"❌ Hugging Face request error: {e}")
         return jsonify({"message": f"Keep going strong, {name}! You’re a star!"})
+@app.route("/motivational-bgm")
+def motivational_bgm():
+    try:
+        prompt = "Play an inspiring and uplifting short motivational music clip with positive energy."
+        payload = {"inputs": prompt}
+
+        audio_response = requests.post(HUGGINGFACE_AUDIO_API_URL, headers=headers, json=payload, stream=True)
+
+        if audio_response.status_code == 200:
+            content_type = audio_response.headers.get("Content-Type", "audio/mpeg")  # fallback to mp3
+            return Response(audio_response.iter_content(chunk_size=1024), content_type=content_type)
+        else:
+            print("🎵 BGM fetch failed:", audio_response.text)
+            return Response(status=500)
+    except Exception as e:
+        print("❌ Error fetching BGM:", e)
+        return Response(status=500)
 
 
 if __name__ == '__main__':

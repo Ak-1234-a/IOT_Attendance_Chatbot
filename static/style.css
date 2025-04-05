@@ -264,3 +264,9 @@ body.dark-mode table th {
   color: #ffffff !important;
   font-weight: 700;
 }
+.last-updated {
+  font-size: 0.9rem;
+  color: #aaa;
+  margin-top: 10px;
+  text-align: right;
+}

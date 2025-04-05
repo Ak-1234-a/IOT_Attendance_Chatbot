@@ -81,12 +81,26 @@ function renderTable(data) {
           showConfirmButton: false
         });
 
-        // ✅ Text-to-Speech
+        // ✅ 1. Speak the motivational message
         const synth = window.speechSynthesis;
         const utter = new SpeechSynthesisUtterance(`${emp.Employee} has 100 percent attendance! Here's a message for you: ${data.message}`);
         utter.lang = "en-US";
         utter.rate = 1;
         synth.speak(utter);
+
+        // ✅ 2. Wait for the message to finish, then play motivational BGM
+        utter.onend = async () => {
+          try {
+            const audioRes = await fetch("/motivational-bgm");
+            const blob = await audioRes.blob();
+            const url = URL.createObjectURL(blob);
+            const audio = new Audio(url);
+            audio.play();
+          } catch (e) {
+            console.error("BGM error:", e);
+          }
+        };
+
       } catch (err) {
         console.error("Motivation fetch error:", err);
       }
@@ -122,7 +136,6 @@ function renderTable(data) {
   });
 }
 
-
 function setupDarkModeToggle() {
   const toggle = document.getElementById("darkModeToggle");
   const darkMode = localStorage.getItem("darkMode") === "true";
@@ -144,10 +157,16 @@ async function fetchEmployees() {
     const departments = [...new Set(employees.map(e => e.Department))];
     createDepartmentButtons(departments);
     renderTable(employees);
+
+    // Update last refreshed time
+    const now = new Date();
+    document.getElementById("lastUpdated").textContent = 
+      `Last refreshed: ${now.toLocaleString()}`;
   } catch (err) {
     console.error("Error fetching employees:", err);
   }
 }
 
+
 fetchEmployees();
-setInterval(fetchEmployees, 10000); // auto refresh every 10s
+setInterval(fetchEmployees, 10000);
