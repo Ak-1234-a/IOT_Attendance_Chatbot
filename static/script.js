@@ -43,12 +43,10 @@ function addFilterListeners() {
 }
 
 const shownPopups = new Set();
-
 function renderTable(data) {
   const tbody = document.getElementById("employeeTableBody");
   tbody.innerHTML = "";
 
-  // ✅ Sort based on Attendance (descending)
   const sorted = [...data].sort((a, b) => b.Attendance - a.Attendance);
   const allDepartments = [...new Set(employees.map(e => e.Department))];
 
@@ -58,13 +56,11 @@ function renderTable(data) {
     const trophyIcon = ["🥇", "🥈", "🥉"][idx] || `${idx + 1}`;
     const nameInitials = getInitials(emp.Employee);
 
-    // ✅ Weekly progress from attendance % (assuming 30 working days)
     const presentDays = (emp.Attendance / 100) * 30;
     const weeklyProgress = Math.min((presentDays % 7) / 7 * 100, 100);
     const deptIndex = allDepartments.indexOf(emp.Department);
     const deptClass = `department-${deptIndex % 10}`;
 
-    // ✅ Show motivational popup only once
     if (Math.round(emp.Attendance) === 100 && !shownPopups.has(emp.Employee)) {
       shownPopups.add(emp.Employee);
       try {
@@ -84,6 +80,13 @@ function renderTable(data) {
           timer: 5000,
           showConfirmButton: false
         });
+
+        // ✅ Text-to-Speech
+        const synth = window.speechSynthesis;
+        const utter = new SpeechSynthesisUtterance(`${emp.Employee} has 100 percent attendance! Here's a message for you: ${data.message}`);
+        utter.lang = "en-US";
+        utter.rate = 1;
+        synth.speak(utter);
       } catch (err) {
         console.error("Motivation fetch error:", err);
       }
@@ -118,6 +121,7 @@ function renderTable(data) {
     tbody.appendChild(row);
   });
 }
+
 
 function setupDarkModeToggle() {
   const toggle = document.getElementById("darkModeToggle");
