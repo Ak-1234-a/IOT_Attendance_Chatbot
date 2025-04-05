@@ -42,6 +42,20 @@ function addFilterListeners() {
   });
 }
 
+let confettiInterval;
+
+function startConfettiRain() {
+  confettiInterval = setInterval(() => {
+    confetti({ particleCount: 50, spread: 100, origin: { x: 0, y: 0.6 } });
+    confetti({ particleCount: 50, spread: 100, origin: { x: 1, y: 0.6 } });
+  }, 500); // Change interval for faster/slower rain
+}
+
+function stopConfettiRain() {
+  clearInterval(confettiInterval);
+}
+
+
 const shownPopups = new Set();
 function renderTable(data) {
   const tbody = document.getElementById("employeeTableBody");
@@ -60,51 +74,56 @@ function renderTable(data) {
     const weeklyProgress = Math.min((presentDays % 7) / 7 * 100, 100);
     const deptIndex = allDepartments.indexOf(emp.Department);
     const deptClass = `department-${deptIndex % 10}`;
-
     if (Math.round(emp.Attendance) === 100 && !shownPopups.has(emp.Employee)) {
       shownPopups.add(emp.Employee);
       try {
         const res = await fetch("/motivate", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ name: emp.Employee })
         });
         const data = await res.json();
-
+    
         Swal.fire({
           title: "🎉 Perfect Attendance!",
           html: `<strong>${emp.Employee}</strong> has 100% attendance!<br><em>"${data.message}"</em>`,
           icon: "success",
-          timer: 5000,
-          showConfirmButton: false
+          timer: 8000,
+          showConfirmButton: true
         });
-
-        // ✅ 1. Speak the motivational message
+    
+        // ✅ 1. Speak the motivational message first
         const synth = window.speechSynthesis;
         const utter = new SpeechSynthesisUtterance(`${emp.Employee} has 100 percent attendance! Here's a message for you: ${data.message}`);
         utter.lang = "en-US";
         utter.rate = 1;
         synth.speak(utter);
-
-        // ✅ 2. Wait for the message to finish, then play motivational BGM
+    
+        // ✅ 2. After speech ends, THEN play music & confetti
         utter.onend = async () => {
           try {
             const audioRes = await fetch("/motivational-bgm");
             const blob = await audioRes.blob();
             const url = URL.createObjectURL(blob);
-            const audio = new Audio(url);
-            audio.play();
+            const finalAudio = new Audio(url);
+    
+            // ✨ Start confetti AFTER TTS
+            startConfettiRain();
+    
+            finalAudio.play();
+            finalAudio.onended = () => {
+              stopConfettiRain(); // ✅ Confetti stops when actual BGM ends
+            };
           } catch (e) {
             console.error("BGM error:", e);
           }
         };
-
+    
       } catch (err) {
         console.error("Motivation fetch error:", err);
       }
     }
+    
 
     row.innerHTML = `
       <td>${trophyIcon}</td>
