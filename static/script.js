@@ -46,8 +46,8 @@ let confettiInterval;
 
 function startConfettiRain() {
   confettiInterval = setInterval(() => {
-    confetti({ particleCount: 50, spread: 100, origin: { x: 0, y: 0.6 } });
-    confetti({ particleCount: 50, spread: 100, origin: { x: 1, y: 0.6 } });
+    confetti({ particleCount: 200, spread: 100, origin: { x: 0, y: 0.6 } });
+    confetti({ particleCount: 200, spread: 100, origin: { x: 1, y: 0.6 } });
   }, 500); // Change interval for faster/slower rain
 }
 

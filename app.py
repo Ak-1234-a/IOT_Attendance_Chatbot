@@ -7,8 +7,13 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-# MongoDB Connection
-client = MongoClient("mongodb://localhost:27017/")
+# Load environment variables
+MONGODB_PASSWORD = os.environ.get("MONGODB_PASSWORD", "your_default_password")
+HUGGINGFACE_API_KEY = os.environ.get("HUGGINGFACE_API_KEY", "your_default_hf_key")
+
+# MongoDB Remote Connection (MongoDB Atlas)
+MONGO_URI = f"mongodb+srv://arun:{MONGODB_PASSWORD}@iotapp.ccch7ff.mongodb.net/?retryWrites=true&w=majority&appName=IOTAPP"
+client = MongoClient(MONGO_URI)
 db = client["arun"]
 collection = db["employees"]
 
@@ -16,8 +21,7 @@ TOTAL_WORKING_DAYS = 30
 
 # Hugging Face API Configuration
 HUGGINGFACE_API_URL = "https://api-inference.huggingface.co/models/google/flan-t5-large"
-HUGGINGFACE_AUDIO_API_URL = "https://api-inference.huggingface.co/models/facebook/musicgen-small"  # Audio model
-HUGGINGFACE_API_KEY = "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"  # 🔐 Replace with your key
+HUGGINGFACE_AUDIO_API_URL = "https://api-inference.huggingface.co/models/facebook/musicgen-small"
 
 headers = {
     "Authorization": f"Bearer {HUGGINGFACE_API_KEY}",
@@ -93,6 +97,8 @@ def generate_motivation():
     except Exception as e:
         print(f"❌ Hugging Face request error: {e}")
         return jsonify({"message": f"Keep going strong, {name}! You’re a star!"})
+
+
 @app.route("/motivational-bgm")
 def motivational_bgm():
     try:
@@ -102,7 +108,7 @@ def motivational_bgm():
         audio_response = requests.post(HUGGINGFACE_AUDIO_API_URL, headers=headers, json=payload, stream=True)
 
         if audio_response.status_code == 200:
-            content_type = audio_response.headers.get("Content-Type", "audio/mpeg")  # fallback to mp3
+            content_type = audio_response.headers.get("Content-Type", "audio/mpeg")
             return Response(audio_response.iter_content(chunk_size=1024), content_type=content_type)
         else:
             print("🎵 BGM fetch failed:", audio_response.text)
