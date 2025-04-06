@@ -38,7 +38,14 @@ def load_data():
         data = list(collection.find({}, {"_id": 0}))
         formatted_data = []
         for emp in data:
-            present = emp.get("present_days", 0)
+            raw_present = emp.get("present_days", 0)
+
+            # Safely convert present_days to an int
+            if isinstance(raw_present, dict) and "$numberInt" in raw_present:
+                present = int(raw_present["$numberInt"])
+            else:
+                present = int(raw_present)
+
             attendance_percent = (present / TOTAL_WORKING_DAYS) * 100
             formatted_data.append({
                 "Employee": emp.get("name", "Unknown"),
