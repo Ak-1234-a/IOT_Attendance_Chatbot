@@ -1,15 +1,23 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+require('dotenv').config();  // 🔹 To load .env variables
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 🔹 Connect to MongoDB (`arun` database)
-mongoose.connect('mongodb://localhost:27017/arun')
-  .then(() => console.log("✅ Connected to MongoDB (Database: arun)"))
+// 🔹 Use environment variable for MongoDB Atlas
+const rawPassword = process.env.MONGODB_PASSWORD;
+const encodedPassword = encodeURIComponent(rawPassword);
+const MONGO_URI = `mongodb+srv://arun:${encodedPassword}@iotapp.ccch7ff.mongodb.net/arun?retryWrites=true&w=majority&appName=IOTAPP`;
+
+mongoose.connect(MONGO_URI)
+  .then(() => console.log("✅ Connected to MongoDB Atlas"))
   .catch(err => console.log("❌ MongoDB Connection Error:", err));
+
+// ... rest of your code remains unchanged ...
+
 
 // 🔹 Updated Employee Schema (with present_days, no attendance array)
 const employeeSchema = new mongoose.Schema({
