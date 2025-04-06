@@ -64,7 +64,7 @@ app.post('/attendance', async (req, res) => {
   }
 });
 
-// 🔹 Start Server
-app.listen(5000, '0.0.0.0', () =>
-  console.log("🚀 Server running on http://192.168.29.119")
-);
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
