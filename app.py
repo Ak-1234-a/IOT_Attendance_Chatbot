@@ -1,3 +1,4 @@
+from urllib.parse import quote_plus  # Add this at the top with other imports
 from flask import Flask, render_template, jsonify, request, Response
 from flask_cors import CORS
 from pymongo import MongoClient
@@ -7,12 +8,15 @@ import os
 app = Flask(__name__)
 CORS(app)
 
+
 # Load environment variables
-MONGODB_PASSWORD = os.environ.get("MONGODB_PASSWORD", "your_default_password")
+raw_password = os.environ.get("MONGODB_PASSWORD", "your_default_password")
+MONGODB_PASSWORD = quote_plus(raw_password)  # Escape special characters
 HUGGINGFACE_API_KEY = os.environ.get("HUGGINGFACE_API_KEY", "your_default_hf_key")
 
 # MongoDB Remote Connection (MongoDB Atlas)
 MONGO_URI = f"mongodb+srv://arun:{MONGODB_PASSWORD}@iotapp.ccch7ff.mongodb.net/?retryWrites=true&w=majority&appName=IOTAPP"
+
 client = MongoClient(MONGO_URI)
 db = client["arun"]
 collection = db["employees"]
