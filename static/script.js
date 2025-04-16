@@ -35,11 +35,24 @@ function addFilterListeners() {
     btn.addEventListener("click", () => {
       document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
-      const dept = btn.dataset.department;
-      const filtered = dept === "all" ? employees : employees.filter(e => e.Department === dept);
-      renderTable(filtered);
+      filterBySearch(); // reapply search + filter combo
     });
   });
+}
+
+document.getElementById("searchInput").addEventListener("input", filterBySearch);
+
+function filterBySearch() {
+  const dept = document.querySelector(".filter-btn.active")?.dataset?.department || "all";
+  const searchQuery = document.getElementById("searchInput").value.toLowerCase();
+
+  const filtered = employees.filter(emp => {
+    const matchesDept = dept === "all" || emp.Department === dept;
+    const matchesSearch = emp.Employee.toLowerCase().includes(searchQuery);
+    return matchesDept && matchesSearch;
+  });
+
+  renderTable(filtered);
 }
 
 let confettiInterval;
@@ -48,13 +61,12 @@ function startConfettiRain() {
   confettiInterval = setInterval(() => {
     confetti({ particleCount: 200, spread: 100, origin: { x: 0, y: 0.6 } });
     confetti({ particleCount: 200, spread: 100, origin: { x: 1, y: 0.6 } });
-  }, 500); // Change interval for faster/slower rain
+  }, 500);
 }
 
 function stopConfettiRain() {
   clearInterval(confettiInterval);
 }
-
 
 const shownPopups = new Set();
 function renderTable(data) {
@@ -74,6 +86,7 @@ function renderTable(data) {
     const weeklyProgress = Math.min((presentDays % 7) / 7 * 100, 100);
     const deptIndex = allDepartments.indexOf(emp.Department);
     const deptClass = `department-${deptIndex % 10}`;
+
     if (Math.round(emp.Attendance) === 100 && !shownPopups.has(emp.Employee)) {
       shownPopups.add(emp.Employee);
       try {
@@ -83,7 +96,7 @@ function renderTable(data) {
           body: JSON.stringify({ name: emp.Employee })
         });
         const data = await res.json();
-    
+
         Swal.fire({
           title: "🎉 Perfect Attendance!",
           html: `<strong>${emp.Employee}</strong> has 100% attendance!<br><em>"${data.message}"</em>`,
@@ -91,39 +104,32 @@ function renderTable(data) {
           timer: 8000,
           showConfirmButton: true
         });
-    
-        // ✅ 1. Speak the motivational message first
+
         const synth = window.speechSynthesis;
         const utter = new SpeechSynthesisUtterance(`${emp.Employee} has 100 percent attendance! Here's a message for you: ${data.message}`);
         utter.lang = "en-US";
         utter.rate = 1;
         synth.speak(utter);
-    
-        // ✅ 2. After speech ends, THEN play music & confetti
+
         utter.onend = async () => {
           try {
             const audioRes = await fetch("/motivational-bgm");
             const blob = await audioRes.blob();
             const url = URL.createObjectURL(blob);
             const finalAudio = new Audio(url);
-    
-            // ✨ Start confetti AFTER TTS
             startConfettiRain();
-    
             finalAudio.play();
             finalAudio.onended = () => {
-              stopConfettiRain(); // ✅ Confetti stops when actual BGM ends
+              stopConfettiRain();
             };
           } catch (e) {
             console.error("BGM error:", e);
           }
         };
-    
       } catch (err) {
         console.error("Motivation fetch error:", err);
       }
     }
-    
 
     row.innerHTML = `
       <td>${trophyIcon}</td>
@@ -175,17 +181,13 @@ async function fetchEmployees() {
     employees = await res.json();
     const departments = [...new Set(employees.map(e => e.Department))];
     createDepartmentButtons(departments);
-    renderTable(employees);
-
-    // Update last refreshed time
+    filterBySearch(); // Initial render with filters
     const now = new Date();
-    document.getElementById("lastUpdated").textContent = 
-      `Last refreshed: ${now.toLocaleString()}`;
+    document.getElementById("lastUpdated").textContent = `Last refreshed: ${now.toLocaleString()}`;
   } catch (err) {
     console.error("Error fetching employees:", err);
   }
 }
-
 
 fetchEmployees();
 setInterval(fetchEmployees, 10000);
