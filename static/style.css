@@ -270,3 +270,12 @@ body.dark-mode table th {
   margin-top: 10px;
   text-align: right;
 }
+
+#searchBox {
+  padding: 8px;
+  margin-bottom: 15px;
+  width: 250px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
