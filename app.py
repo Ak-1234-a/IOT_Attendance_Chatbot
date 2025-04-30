@@ -1,64 +1,134 @@
-from flask import Flask, render_template, Response, request, jsonify
-import cv2
-import numpy as np
-from tensorflow.keras.models import load_model
+from urllib.parse import quote_plus  # Add this at the top with other imports
+from flask import Flask, render_template, jsonify, request, Response
+from flask_cors import CORS
+from pymongo import MongoClient
+import requests
+import os
 
 app = Flask(__name__)
+CORS(app)
 
-# ✅ Load Model with Safe Mode Disabled
-model = load_model("model/emotion_model.keras", safe_mode=False)
-print("✅ Model Loaded Successfully!")
 
-# ✅ Emotion Classes
-emotion_classes = ["Angry", "Disgust", "Fear", "Happy", "Sad", "Surprise", "Neutral"]
+# Load environment variables
+raw_password = os.environ.get("MONGODB_PASSWORD", "your_default_password")
+MONGODB_PASSWORD = quote_plus(raw_password)  # Escape special characters
+HUGGINGFACE_API_KEY = os.environ.get("HUGGINGFACE_API_KEY", "your_default_hf_key")
 
-# ✅ Initialize Video Capture
-video_capture = cv2.VideoCapture(0)
+# MongoDB Remote Connection (MongoDB Atlas)
+MONGO_URI = f"mongodb+srv://arun:{MONGODB_PASSWORD}@iotapp.ccch7ff.mongodb.net/?retryWrites=true&w=majority&appName=IOTAPP"
 
-def detect_emotions(frame):
-    """Detect faces and emotions"""
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
-    faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+client = MongoClient(MONGO_URI)
+db = client["arun"]
+collection = db["employees"]
 
-    detected_emotion = "No Face"
-    for (x, y, w, h) in faces:
-        face = gray[y:y+h, x:x+w]
-        face = cv2.resize(face, (48, 48)).reshape(1, 48, 48, 1) / 255.0
-        prediction = model.predict(face, verbose=0)
-        detected_emotion = emotion_classes[np.argmax(prediction)]
+TOTAL_WORKING_DAYS = 30
 
-        # ✅ Draw Emotion on Face
-        cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
-        cv2.putText(frame, detected_emotion, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 0, 0), 2)
+# Hugging Face API Configuration
+HUGGINGFACE_API_URL = "https://api-inference.huggingface.co/models/google/flan-t5-large"
+HUGGINGFACE_AUDIO_API_URL = "https://api-inference.huggingface.co/models/facebook/musicgen-small"
 
-    return detected_emotion
+headers = {
+    "Authorization": f"Bearer {HUGGINGFACE_API_KEY}",
+    "Content-Type": "application/json"
+}
 
-def generate_frames():
-    """Generate real-time frames"""
-    while True:
-        success, frame = video_capture.read()
-        if not success:
-            break
 
-        detect_emotions(frame)
+def load_data():
+    try:
+        data = list(collection.find({}, {"_id": 0}))
+        formatted_data = []
+        for emp in data:
+            raw_present = emp.get("present_days", 0)
 
-        _, buffer = cv2.imencode(".jpg", frame)
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
+            # Safely convert present_days to an int
+            if isinstance(raw_present, dict) and "$numberInt" in raw_present:
+                present = int(raw_present["$numberInt"])
+            else:
+                present = int(raw_present)
+
+            attendance_percent = (present / TOTAL_WORKING_DAYS) * 100
+            formatted_data.append({
+                "Employee": emp.get("name", "Unknown"),
+                "Role": emp.get("role", "Employee"),
+                "Department": emp.get("department", "General"),
+                "Attendance": round(attendance_percent),
+                "Coins": present * 10
+            })
+        return formatted_data
+    except Exception as e:
+        print(f"❌ MongoDB fetch error: {e}")
+        return []
+
 
 @app.route('/')
-def index():
+def home():
     return render_template('index.html')
 
-@app.route('/video_feed')
-def video_feed():
-    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-@app.route('/check_emotion', methods=['GET'])
-def check_emotion():
-    """API to get the latest detected emotion"""
-    return jsonify({"emotion": detect_emotions(video_capture.read()[1])})
+@app.route('/employees')
+def get_employees():
+    data = load_data()
+    return jsonify(data)
+
+
+@app.route('/employees/<string:department>')
+def get_department_employees(department):
+    data = load_data()
+    filtered_data = [emp for emp in data if emp['Department'].strip().lower() == department.strip().lower()]
+    if not filtered_data:
+        return jsonify({"error": "Department not found"}), 404
+    return jsonify(filtered_data)
+
+
+@app.route('/motivate', methods=["POST"])
+def generate_motivation():
+    content = request.json
+    name = content.get("name", "Employee")
+    prompt = f"Create a short, cheerful motivational message with emojis for an employee named {name} who achieved 100% attendance this month."
+
+    try:
+        payload = {
+            "inputs": prompt,
+            "parameters": {
+                "max_length": 100,
+                "temperature": 0.9,
+                "top_k": 50,
+                "do_sample": True
+            }
+        }
+
+        response = requests.post(HUGGINGFACE_API_URL, headers=headers, json=payload)
+
+        if response.status_code == 200:
+            generated_text = response.json()[0]['generated_text']
+            return jsonify({"message": generated_text})
+        else:
+            print("⚠️ Hugging Face API error:", response.text)
+            return jsonify({"message": f"Keep going strong, {name}! You’re a star!"})
+    except Exception as e:
+        print(f"❌ Hugging Face request error: {e}")
+        return jsonify({"message": f"Keep going strong, {name}! You’re a star!"})
+
+
+@app.route("/motivational-bgm")
+def motivational_bgm():
+    try:
+        prompt = "Play an inspiring and uplifting short motivational music clip with positive energy."
+        payload = {"inputs": prompt}
+
+        audio_response = requests.post(HUGGINGFACE_AUDIO_API_URL, headers=headers, json=payload, stream=True)
+
+        if audio_response.status_code == 200:
+            content_type = audio_response.headers.get("Content-Type", "audio/mpeg")
+            return Response(audio_response.iter_content(chunk_size=1024), content_type=content_type)
+        else:
+            print("🎵 BGM fetch failed:", audio_response.text)
+            return Response(status=500)
+    except Exception as e:
+        print("❌ Error fetching BGM:", e)
+        return Response(status=500)
+
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=True, host='0.0.0.0', port=port)

@@ -1,29 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Attendance System</title>
-    <link rel="stylesheet" href="/static/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>T Mills Employee Leaderboard</title>
+  <link rel="stylesheet" href="static/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    /* 🌙 Dark Mode Styles */
+    body.dark-mode {
+      background-color: #121212;
+      color: #e0e0e0;
+    }
+
+    body.dark-mode .container {
+      background-color: #1e1e1e;
+    }
+
+    body.dark-mode table {
+      background-color: #2a2a2a;
+      color: #e0e0e0;
+    }
+
+    body.dark-mode .filter-btn {
+      background-color: #333;
+      color: white;
+      border: 1px solid #555;
+    }
+
+    /* 🌗 Toggle Switch Styles */
+    .toggle-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0;
+      right: 0; bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #2196F3;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(24px);
+    }
+  </style>
 </head>
 <body>
-    <h1>Real-Time Face Emotion Analysis</h1>
-    
-    <div class="video-container">
-        <img id="video-stream" src="{{ url_for('video_feed') }}" alt="Live Video Feed">
+  <div class="container">
+    <header style="display: flex; justify-content: center; position: relative;">
+      <h1>Thiagarajar Mills Employee Leaderboard</h1>
+
+          <input type="text" id="searchBox" placeholder="Search by name..." />
+      <!-- 🌗 Dark Mode Toggle -->
+      <div class="toggle-wrapper">
+        <span>🌞</span>
+        <label class="switch">
+          <input type="checkbox" id="darkModeToggle">
+          <span class="slider"></span>
+        </label>
+        <span>🌙</span>
+      </div>
+    </header>
+
+    <!-- 🔍 Filters -->
+    <div class="filters" id="departmentFilters">
+      <!-- Buttons will be inserted dynamically here -->
     </div>
-
-    <h2>Detected Emotion: <span id="emotion-text">---</span></h2>
-
-    <!-- ✅ HR Alert Popup -->
-    <div id="hr-popup" class="popup">
-        <div class="popup-content">
-            <h2>🚨 Alert: Employee Fatigue Detected!</h2>
-            <p id="alert-message"></p>
-            <button id="close-popup">Close</button>
-        </div>
+    <div id="lastUpdated" class="last-updated">Last refreshed: --</div>
+    <!-- 📊 Table -->
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>RANK</th>
+            <th>EMPLOYEE</th>
+            <th>ROLE</th>
+            <th>DEPARTMENT</th>
+            <th>ATTENDANCE</th>
+            <th>COINS</th>
+          </tr>
+        </thead>
+        <tbody id="employeeTableBody">
+          <!-- Data filled dynamically -->
+        </tbody>
+      </table>
     </div>
+  </div>
 
-    <script src="/static/script.js"></script>
+  <!-- 📜 Scripts -->
+  <script src="static/script.js"></script>
 </body>
 </html>

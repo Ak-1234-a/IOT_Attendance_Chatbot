@@ -1,0 +1,281 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+body {
+  background-color: #f8f9fa;
+  padding: 2rem;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+h1 {
+  color: #1a1a1a;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.filters {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 0.5rem 1.5rem;
+  border: 1px solid #e2e8f0;
+  background-color: white;
+  color: #4a5568;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.filter-btn:hover {
+  background-color: #f7fafc;
+}
+
+.filter-btn.active {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.table-container {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  background-color: #f8fafc;
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: left;
+  padding: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+td {
+  padding: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+.employee-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.employee-initial {
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: #f1f5f9;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.employee-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.employee-name {
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+.employee-id {
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+.department-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.department-badge.Management {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.department-badge.Production {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.department-badge.Quality {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.department-badge.Maintenance {
+  background-color: #e0e7ff;
+  color: #3730a3;
+}
+
+.attendance-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.attendance-bar {
+  flex-grow: 1;
+  max-width: 8rem;
+  height: 0.5rem;
+  background-color: #e2e8f0;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.attendance-progress {
+  height: 100%;
+  background-color: #22c55e;
+  border-radius: 9999px;
+}
+
+.attendance-value {
+  font-size: 0.875rem;
+  color: #1a1a1a;
+  font-weight: 500;
+  min-width: 3.5rem;
+}
+
+@keyframes rotateCoin {
+  0% {
+      transform: rotateY(0deg);
+  }
+  100% {
+      transform: rotateY(360deg);
+  }
+}
+
+.coin-icon {
+  display: inline-block;
+  animation: rotateCoin 3s infinite linear; /* 3s for one full rotation, infinite looping */
+}
+.weekly-progress-bar {
+  width: 100%;
+  height: 6px;
+  background-color: #555;
+  margin-top: 4px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.weekly-progress-bar .progress {
+  height: 100%;
+  background-color: yellow;
+  border-radius: 4px;
+}
+/* Default badge style */
+.department-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+}
+
+/* Dynamically assigned color classes (extendable) */
+.department-0 { background-color: #6366f1; } /* Indigo */
+.department-1 { background-color: #10b981; } /* Emerald */
+.department-2 { background-color: #f59e0b; } /* Amber */
+.department-3 { background-color: #ef4444; } /* Red */
+.department-4 { background-color: #3b82f6; } /* Blue */
+.department-5 { background-color: #8b5cf6; } /* Violet */
+.department-6 { background-color: #14b8a6; } /* Teal */
+.department-7 { background-color: #f97316; } /* Orange */
+.department-8 { background-color: #22c55e; } /* Green */
+.department-9 { background-color: #e11d48; } /* Rose */
+
+/* 🌙 Dark Mode Styles */
+body.dark-mode table {
+  background-color: #2a2a2a;
+  color: #ffffff;
+}
+
+body.dark-mode table th,
+body.dark-mode table td {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+body.dark-mode .employee-name,
+body.dark-mode .department-badge,
+body.dark-mode .attendance-value,
+body.dark-mode .employee-id {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+body.dark-mode .employee-id {
+  color: #cccccc !important;
+}
+
+body.dark-mode table tr:hover {
+  background-color: #333333;
+}
+/* ✅ Fix for Title */
+body.dark-mode h1 {
+  color: #ffffff !important;
+  font-weight: 700;
+}
+
+/* ✅ Fix for Table Header Row */
+body.dark-mode table th {
+  background-color: #1e1e1e !important;
+  color: #ffffff !important;
+  font-weight: 700;
+}
+.last-updated {
+  font-size: 0.9rem;
+  color: #aaa;
+  margin-top: 10px;
+  text-align: right;
+}
+
+#searchBox {
+  padding: 8px;
+  margin-bottom: 15px;
+  width: 250px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
